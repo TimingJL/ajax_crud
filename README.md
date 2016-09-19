@@ -1,4 +1,9 @@
+# Ajax Crud
+![Ubuntu version](https://img.shields.io/badge/Ubuntu-16.04%20LTS-orange.svg)
+![Rails version](https://img.shields.io/badge/Rails-v5.0.0-blue.svg)
+![Ruby version](https://img.shields.io/badge/Ruby-v2.3.1p112-red.svg)
 
+This is the little practice about how to build dynamic application using the built-in AJAX functionality of Rails.
 
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/index.jpeg)
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/new_post.jpeg)
@@ -7,6 +12,14 @@
 ```console
 $ rails new rails_ajax
 ```
+# Add therubyracer rubygems
+In Gemfile
+```console
+gem 'therubyracer'
+```
+Note: 
+Because there is no Javascript interpreter for Rails on Ubuntu Operation System, we have to install `Node.js` or `therubyracer` to get the Javascript interpreter.
+
 
 # Using Scaffold
 ```console
@@ -193,3 +206,48 @@ end
 
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/index.jpeg)
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/new_post.jpeg)
+![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/show.jpeg)
+
+# Using Ajax to create post
+First, we need to check whether `remote: true` is in `<%= form_for(@post, remote: true) do |f| %>` in `app/views/posts/index.html.erb`.
+
+Then, we need to tell the controller that format has js.        
+
+In `app/controllers/posts_controller.rb`, we add `format.js`
+```ruby
+  def create
+    @post = Post.new(post_params)
+
+    respond_to do |format|
+      if @post.save
+        format.html { redirect_to @post, notice: 'Post was successfully created.' }
+        format.json { render :show, status: :created, location: @post }
+        format.js
+      else
+        format.html { render :new }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+        format.js
+      end
+    end
+  end
+```
+
+Next, we create a new file with the same name of the create action `create.js.erb` in `app/views/posts`. And in this file, we're gonna write some javascript to actually tell the browser what to do with a page.
+
+In `app/views/posts/create.js.erb`
+```js
+$("#mynewpost").modal('hide');
+$(".post_title").val('');
+$(".post_content").val('');
+
+$("#container_posts").prepend('<%= j render @post %>');
+$("#post_<%= @post.id %>").hide().fadeIn(1000);
+```
+![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/ajax_post.jpeg)
+
+# Reference
+#### Codeplace | How to use the built-in AJAX functionality of Ruby on Rails
+https://www.youtube.com/watch?v=2Il7PPhen3o         
+
+#### Source code
+https://github.com/stukio/ajax_crud
