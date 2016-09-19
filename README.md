@@ -3,7 +3,7 @@
 ![Rails version](https://img.shields.io/badge/Rails-v5.0.0-blue.svg)
 ![Ruby version](https://img.shields.io/badge/Ruby-v2.3.1p112-red.svg)
 
-This is the little practice about how to build dynamic application using the built-in AJAX functionality of Rails.
+This is a little practice about how to build dynamic application using the built-in AJAX functionality of Rails.
 
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/index.jpeg)
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/new_post.jpeg)
@@ -244,6 +244,49 @@ $("#container_posts").prepend('<%= j render @post %>');
 $("#post_<%= @post.id %>").hide().fadeIn(1000);
 ```
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/ajax_post.jpeg)
+
+
+Let's do the same for the update.
+
+In `app/views/posts/_post.html.erb`, we're going to add `remote: true`
+```html
+...
+<%= form_for(post, :method => :put, remote: true) do |f| %>
+...
+```
+
+Then in `app/controllers/posts_controller.rb`, we add `format.js`
+```ruby
+  def update
+    respond_to do |format|
+      if @post.update(post_params)
+        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
+        format.json { render :show, status: :ok, location: @post }
+        format.js
+      else
+        format.html { render :edit }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+        format.js
+      end
+    end
+  end
+```
+
+And in `app/views/posts`, we create a file and save it as `update.js.erb`
+```js
+$("#myupdatepost_<%= @post.id %>").modal('hide');
+
+$("#post_<%= @post.id %>").fadeOut(500, function(){
+
+	$(this).remove();
+	$("#container_posts").prepend('<%= j render @post %>');
+	
+});
+```
+
+
+
+
 
 # Reference
 #### Codeplace | How to use the built-in AJAX functionality of Ruby on Rails
