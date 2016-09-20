@@ -1,4 +1,4 @@
-# Ajax Crud
+# Ajax CRUD
 ![Ubuntu version](https://img.shields.io/badge/Ubuntu-16.04%20LTS-orange.svg)
 ![Rails version](https://img.shields.io/badge/Rails-v5.0.0-blue.svg)
 ![Ruby version](https://img.shields.io/badge/Ruby-v2.3.1p112-red.svg)
@@ -7,6 +7,7 @@ This is a little practice about how to build dynamic application using the built
 
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/index.jpeg)
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/new_post.jpeg)
+![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/ajax_post.jpeg)
 
 # Create a App
 ```console
@@ -37,7 +38,7 @@ end
 ```
 
 # Styling
-Let's poste these links from the bootstrap.          
+Let's paste these links from the bootstrap.          
 http://getbootstrap.com/getting-started/       
 
 In `app/views/layouts/application.html.erb`
@@ -245,7 +246,7 @@ $("#post_<%= @post.id %>").hide().fadeIn(1000);
 ```
 ![image](https://github.com/TimingJL/ajax_crud/blob/master/pic/ajax_post.jpeg)
 
-
+# Using Ajax to update post
 Let's do the same for the update.
 
 In `app/views/posts/_post.html.erb`, we're going to add `remote: true`
@@ -284,7 +285,32 @@ $("#post_<%= @post.id %>").fadeOut(500, function(){
 });
 ```
 
+# Using Ajax to destroy post
 
+In `app/views/posts/_post.html.erb`, we add `remote :true` like the folowing
+```html
+<%= link_to 'Destroy', post, method: :delete, class: "btn btn-danger", remote: true %>
+```
+
+And in `app/controllers/posts_controller.rb`, we add `format.js`
+```ruby
+  def destroy
+    @post.destroy
+    respond_to do |format|
+      format.html { redirect_to posts_url, notice: 'Post was successfully destroyed.' }
+      format.json { head :no_content }
+      format.js
+    end
+  end
+```
+
+Then we create a new file `destroy.js.erb`.       
+So in `app/views/posts/destroy.js.erb`
+```js
+$("#post_<%= @post.id %>").fadeOut(500, function(){
+	$(this).remove();
+});
+```
 
 
 
